@@ -1,21 +1,10 @@
-const express = require('express');
-const webpack = require('webpack');
 const path = require('path');
-const webpackDevMiddleware = require('webpack-dev-middleware');
-const webpackHotMiddleware = require('webpack-hot-middleware');
-const webpackConfig = require('./../webpack.config');
-const app = express();
-const compiler = webpack(webpackConfig);
+const http = require('http');
 const template = require('./../template').default;
+const app = require('./expressConfig');
+const config = require('../config/config');
 
-app.use(webpackDevMiddleware(compiler,{
-    publicPath: webpackConfig.output.publicPath
-}));
-app.use(webpackHotMiddleware(compiler));
-app.use('dist', express.static(path.join(__dirname, "../dist")));
-app.use('/', (req, res) => {
-    res.send(template())
-})
-app.listen(8081, function ert(){
-    console.log("server run on port 8081")
-});
+const server = http.createServer(app);
+
+server.listen(config.port);
+console.log(`server run on ${config.port}`);

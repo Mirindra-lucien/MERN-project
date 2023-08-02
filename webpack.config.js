@@ -1,5 +1,4 @@
 const path = require('path');
-const htmlPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
 const CWDIR = process.cwd();
@@ -50,9 +49,7 @@ const config = {
         }]
     },
     plugins: [
-        new htmlPlugin({
-            template: path.join(__dirname, 'dist/index.html')
-        }),
+        new webpack.NoEmitOnErrorsPlugin() ,
         new webpack.HotModuleReplacementPlugin()
     ]
 }
