@@ -65,7 +65,7 @@ eval("const express = __webpack_require__(/*! express */ \"express\");\nconst co
   \**************************/
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("const path = __webpack_require__(/*! path */ \"path\");\nconst http = __webpack_require__(/*! http */ \"http\");\nconst template = (__webpack_require__(/*! ./../template */ \"./template.js\")[\"default\"]);\nconst app = __webpack_require__(/*! ./expressConfig */ \"./server/expressConfig.js\");\nconst config = __webpack_require__(/*! ../config/config */ \"./config/config.js\");\nconst server = http.createServer(app);\nserver.listen(config.port);\nconsole.log(`server run on ${config.port}`);\n\n//# sourceURL=webpack://mysite/./server/server.js?");
+eval("const path = __webpack_require__(/*! path */ \"path\");\nconst http = __webpack_require__(/*! http */ \"http\");\nconst mongoose = __webpack_require__(/*! mongoose */ \"mongoose\");\nconst template = (__webpack_require__(/*! ./../template */ \"./template.js\")[\"default\"]);\nconst app = __webpack_require__(/*! ./expressConfig */ \"./server/expressConfig.js\");\nconst config = __webpack_require__(/*! ../config/config */ \"./config/config.js\");\nmongoose.Promise = global.Promise;\nmongoose.connect(config.mongoURI);\nmongoose.connection.on(\"error\", () => {\n  throw new Error(`cannot connect to ${config.mongoURI}`);\n});\nconst server = http.createServer(app);\nserver.listen(config.port);\nconsole.log(`server run on ${config.port}`);\n\n//# sourceURL=webpack://mysite/./server/server.js?");
 
 /***/ }),
 
@@ -120,6 +120,17 @@ module.exports = require("cors");
 
 "use strict";
 module.exports = require("express");
+
+/***/ }),
+
+/***/ "mongoose":
+/*!***************************!*\
+  !*** external "mongoose" ***!
+  \***************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("mongoose");
 
 /***/ }),
 
