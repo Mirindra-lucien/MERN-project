@@ -40,7 +40,8 @@ const account = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ["user", "admin", "sadmin"]
+        enum: ["user", "admin", "sadmin"],
+        default: "user"
     },
     encoder: String
 });

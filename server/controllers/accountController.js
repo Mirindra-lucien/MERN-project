@@ -73,6 +73,7 @@ exports.update = async (req, res) => {
             const cprof = uploadfile(req.files.coverProfile, res);
             user.photo.coverProfile = cprof;
         }
+        user.updatedat = Date.now();
         const newUser = new Account(user);
         await newUser.save();
         res.status(200).json(newUser);
@@ -112,21 +113,5 @@ exports.verify = (req, res) => {
         else {
             res.status(200).json({verificationCode: code, email: email});
         }
-    });
-}
-
-exports.file = (req, res) => {
-    const photo = req.files.photo;
-    const cphoto = req.files.cphoto;
-    let filename = "" + Date.now() + Math.floor(Math.random() * 9000 + 1000);
-    filename += path.extname(photo.name);
-    let filename1 = "" + Date.now() + Math.floor(Math.random() * 9000 + 1000);
-    filename1 += path.extname(cphoto.name);
-    photo.mv(path.join(CWDIR, "public/images", filename), (err) => {
-        if(err) return res.status(400).json({message: err});
-    });
-    cphoto.mv(path.join(CWDIR, "public/images", filename1), (err) => {
-        if(err) return res.status(400).json({message: err});
-        res.status(200).json({message: "ok"});
     });
 }
