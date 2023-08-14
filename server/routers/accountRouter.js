@@ -14,6 +14,4 @@ router.route("/account/:id")
             .put(controller.update);
 router.route("/account/verify").post(controller.verify)
 
-router.route("/file").post(controller.file);
-
 module.exports = router;

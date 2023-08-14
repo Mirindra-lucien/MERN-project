@@ -48,12 +48,30 @@ exports.delete = async (req, res) => {
     }    
 }
 
+function uploadfile(file, res) {
+    let filename = "" + Date.now() + Math.floor(Math.random() * 9000 + 1000);
+    filename += path.extname(file.name);
+    let filepath = path.join(CWDIR, "public/images", filename);
+    file.mv(filepath, (err) => {
+        if(err) return res.status(400).json({message: err});
+    });
+    return filepath;
+}
+
 exports.update = async (req, res) => {
     try {
         let user = req.account;
         let usern = req.body;
         for(let name in usern) {
             user[name] = usern[name];
+        }
+        if(req.files.profile) {
+            const profile = uploadfile(req.files.profile, res);
+            user.photo.profile = profile;
+        }
+        if(req.files.coverProfile) {
+            const cprof = uploadfile(req.files.coverProfile, res);
+            user.photo.coverProfile = cprof;
         }
         const newUser = new Account(user);
         await newUser.save();
@@ -98,10 +116,17 @@ exports.verify = (req, res) => {
 }
 
 exports.file = (req, res) => {
-    console.log(req.files, req.body)
-    const {photo} = req.files;
-    photo.mv(path.join(CWDIR, "/public/image"), (err) => {
-        if(err) return res.status(400).json({message: "there is an error"});
+    const photo = req.files.photo;
+    const cphoto = req.files.cphoto;
+    let filename = "" + Date.now() + Math.floor(Math.random() * 9000 + 1000);
+    filename += path.extname(photo.name);
+    let filename1 = "" + Date.now() + Math.floor(Math.random() * 9000 + 1000);
+    filename1 += path.extname(cphoto.name);
+    photo.mv(path.join(CWDIR, "public/images", filename), (err) => {
+        if(err) return res.status(400).json({message: err});
+    });
+    cphoto.mv(path.join(CWDIR, "public/images", filename1), (err) => {
+        if(err) return res.status(400).json({message: err});
         res.status(200).json({message: "ok"});
     });
 }
