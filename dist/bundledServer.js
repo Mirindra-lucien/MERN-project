@@ -15,7 +15,7 @@
   \**************************/
 /***/ ((module) => {
 
-eval("const config = {\n  env: \"development\" || 0,\n  port: process.env.PORT || 3000,\n  mongoURI: process.env.MONGO_URI || process.env.MONGO_HOST || \"mongodb://\" + (process.env.IP || \"127.0.0.1\") + \":\" + (process.env.MONGO_PORT || \"27017\") + \"/mimoza\"\n};\nmodule.exports = config;\n\n//# sourceURL=webpack://mysite/./config/config.js?");
+eval("const config = {\n  env: \"development\" || 0,\n  port: process.env.PORT || 3000,\n  mongoURI: process.env.MONGODB_URI || process.env.MONGODB_HOST || \"mongodb://\" + (process.env.IP || \"127.0.0.1\") + \":\" + (process.env.MONGODB_PORT || \"27017\") + \"/mimoza\"\n};\nmodule.exports = config;\n\n//# sourceURL=webpack://mysite/./config/config.js?");
 
 /***/ }),
 
@@ -33,9 +33,9 @@ eval("var webpack = __webpack_require__(/*! webpack */ \"webpack\");\nvar webpac
 /*!*************************************************!*\
   !*** ./server/controllers/accountController.js ***!
   \*************************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
-eval("exports.create = (req, res) => {\n  res.send(\"hello from account controller\");\n};\n\n//# sourceURL=webpack://mysite/./server/controllers/accountController.js?");
+eval("const Account = __webpack_require__(/*! ../models/account */ \"./server/models/account.js\");\nconst fs = __webpack_require__(/*! fs */ \"fs\");\nconst path = __webpack_require__(/*! path */ \"path\");\nconst CWDIR = process.cwd();\nconst nodemailer = __webpack_require__(/*! nodemailer */ \"nodemailer\");\nexports.create = async (req, res) => {\n  try {\n    const user = new Account(req.body);\n    await user.save();\n    return res.status(200).json({\n      message: \"Signed up\",\n      error: \"\"\n    });\n  } catch (err) {\n    res.status(400).json({\n      error: \"Cannot signed up\",\n      message: \"\"\n    });\n  }\n};\nexports.list = async (req, res) => {\n  try {\n    let accounts = await Account.find().select('name username email birthday school city photo createdat');\n    res.json(accounts);\n  } catch (error) {\n    res.status(400).json({\n      error: \"error\"\n    });\n  }\n  ;\n};\nexports.accountById = async (req, res, next, id) => {\n  try {\n    const user = await Account.findById(id);\n    if (!user) {\n      return res.status(400).json({\n        error: \"Account not found\"\n      });\n    }\n    req.account = user;\n    next();\n  } catch (error) {\n    return res.status(400).json({\n      error: \"Cannot retreive account\"\n    });\n  }\n};\nexports[\"delete\"] = async (req, res) => {\n  const account = new Account(req.account);\n  try {\n    const accountDel = await account.deleteOne();\n    accountDel.password = undefined;\n    accountDel.encoder = undefined;\n    res.status(200).json(accountDel);\n  } catch (error) {\n    return res.status(400).json({\n      error: \"cannot delete account\"\n    });\n  }\n};\nexports.update = async (req, res) => {\n  try {\n    let user = req.account;\n    let usern = req.body;\n    for (let name in usern) {\n      user[name] = usern[name];\n    }\n    const newUser = new Account(user);\n    await newUser.save();\n    res.status(200).json(newUser);\n  } catch (error) {\n    return res.status(200).json({\n      error: \"retry again\"\n    });\n  }\n};\nexports.show = (req, res) => {\n  const account = req.account;\n  account.password = undefined;\n  account.encoder = undefined;\n  res.json(account);\n};\nexports.verify = (req, res) => {\n  const email = req.body.email;\n  const code = Math.floor(Math.random() * 900000) + 100000;\n  var transporter = nodemailer.createTransport({\n    service: 'gmail',\n    auth: {\n      user: 'mimoza.association@gmail.com',\n      pass: 'lnkwymzdnhonkrhs'\n    }\n  });\n  var mailOptions = {\n    from: 'mimoza.association@gmail.com',\n    to: email + \"\",\n    subject: 'Fanamarinana fanokafana kaonty',\n    text: \"Ny teny miafina hanamarinana ny kaonty email anao dia : \" + code\n  };\n  transporter.sendMail(mailOptions, function (error, info) {\n    if (error) {\n      res.status(400).json({\n        error: \"verify your email\"\n      });\n    } else {\n      res.status(200).json({\n        verificationCode: code,\n        email: email\n      });\n    }\n  });\n};\nexports.file = (req, res) => {\n  console.log(req.files, req.body);\n  const {\n    photo\n  } = req.files;\n  photo.mv(path.join(CWDIR, \"/public/image\"), err => {\n    if (err) return res.status(400).json({\n      message: \"there is an error\"\n    });\n    res.status(200).json({\n      message: \"ok\"\n    });\n  });\n};\n\n//# sourceURL=webpack://mysite/./server/controllers/accountController.js?");
 
 /***/ }),
 
@@ -45,7 +45,17 @@ eval("exports.create = (req, res) => {\n  res.send(\"hello from account controll
   \*********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("const express = __webpack_require__(/*! express */ \"express\");\nconst path = __webpack_require__(/*! path */ \"path\");\nconst cors = __webpack_require__(/*! cors */ \"cors\");\nconst bodyParser = __webpack_require__(/*! body-parser */ \"body-parser\");\nconst bundler = __webpack_require__(/*! ./clientBundler */ \"./server/clientBundler.js\");\nconst app = express();\nconst template = (__webpack_require__(/*! ../template */ \"./template.js\")[\"default\"]);\nconst accountRouter = __webpack_require__(/*! ./routers/accountRouter */ \"./server/routers/accountRouter.js\");\nbundler.compile(app);\napp.use('/dist', express.static(path.join(__dirname, \"../dist\")));\napp.use('/client', (req, res) => {\n  res.status(200).send(template());\n});\napp.use(cors());\napp.use(bodyParser.urlencoded({\n  extended: false\n}));\napp.use(bodyParser.json());\napp.use(accountRouter);\nmodule.exports = app;\n\n//# sourceURL=webpack://mysite/./server/expressConfig.js?");
+eval("const express = __webpack_require__(/*! express */ \"express\");\nconst path = __webpack_require__(/*! path */ \"path\");\nconst cors = __webpack_require__(/*! cors */ \"cors\");\nconst bodyParser = __webpack_require__(/*! body-parser */ \"body-parser\");\nconst bundler = __webpack_require__(/*! ./clientBundler */ \"./server/clientBundler.js\");\nconst app = express();\nconst template = (__webpack_require__(/*! ../template */ \"./template.js\")[\"default\"]);\nconst accountRouter = __webpack_require__(/*! ./routers/accountRouter */ \"./server/routers/accountRouter.js\");\nbundler.compile(app);\napp.use('/dist', express.static(path.join(__dirname, \"../dist\")));\napp.use('/client', (req, res) => {\n  res.status(200).send(template());\n});\napp.use(cors());\napp.use(bodyParser.urlencoded({\n  extended: true\n}));\napp.use(bodyParser.json());\napp.use(accountRouter);\nmodule.exports = app;\n\n//# sourceURL=webpack://mysite/./server/expressConfig.js?");
+
+/***/ }),
+
+/***/ "./server/models/account.js":
+/*!**********************************!*\
+  !*** ./server/models/account.js ***!
+  \**********************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+eval("const mongoose = __webpack_require__(/*! mongoose */ \"mongoose\");\nconst crypto = __webpack_require__(/*! crypto */ \"crypto\");\nconst account = new mongoose.Schema({\n  _id: {\n    type: 'UUID',\n    default: () => crypto.randomUUID()\n  },\n  name: {\n    first: {\n      type: String,\n      required: true\n    },\n    last: String\n  },\n  username: {\n    type: String,\n    required: true,\n    unique: true,\n    trim: true\n  },\n  email: {\n    type: String,\n    unique: true,\n    required: true,\n    trim: true,\n    match: /.+\\@.+\\..+/\n  },\n  password: {\n    type: String\n  },\n  birthday: Date,\n  school: String,\n  city: String,\n  createdat: {\n    type: Date,\n    default: Date.now\n  },\n  updatedat: Date,\n  photo: {\n    profile: String,\n    coverProfile: String\n  },\n  type: {\n    type: String,\n    enum: [\"user\", \"admin\", \"sadmin\"]\n  },\n  encoder: String\n});\naccount.virtual(\"fullname\").get(function () {\n  return this.name.first + \" \" + this.name.last;\n}).set(function (v) {\n  this.name.first = v.substr(0, v.indexOf(\" \"));\n  this.name.last = v.substr(v.indexOf(\" \") + 1);\n});\naccount.virtual(\"pass\").get(function () {\n  return this.vpass;\n}).set(function (passw) {\n  this.vpass = passw;\n  this.encoder = this.makeEncoder();\n  this.password = this.hashPass(passw + \"\");\n});\naccount.methods.hashPass = function (pass) {\n  if (pass === \"\") return \"\";\n  try {\n    return crypto.createHmac('sha1', this.encoder).update(pass).digest('hex');\n  } catch (error) {\n    return \"\";\n  }\n};\naccount.methods.makeEncoder = function () {\n  return Math.floor(Math.random() * 1000000) + \"\";\n};\naccount.methods.autenthicate = function (passwordText) {\n  return this.hashPass(passwordText) === this.password;\n};\nmodule.exports = mongoose.model(\"Account\", account);\n\n//# sourceURL=webpack://mysite/./server/models/account.js?");
 
 /***/ }),
 
@@ -55,7 +65,7 @@ eval("const express = __webpack_require__(/*! express */ \"express\");\nconst pa
   \*****************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("const express = __webpack_require__(/*! express */ \"express\");\nconst controller = __webpack_require__(/*! ../controllers/accountController */ \"./server/controllers/accountController.js\");\nconst router = express.Router();\nrouter.param(\"id\", (req, res, next) => {});\nrouter.route(\"/account/create\").get(controller.create);\nmodule.exports = router;\n\n//# sourceURL=webpack://mysite/./server/routers/accountRouter.js?");
+eval("const express = __webpack_require__(/*! express */ \"express\");\nconst controller = __webpack_require__(/*! ../controllers/accountController */ \"./server/controllers/accountController.js\");\nconst fileupload = __webpack_require__(/*! express-fileupload */ \"express-fileupload\");\nconst router = express.Router();\nrouter.param(\"id\", controller.accountById);\nrouter.use(\"/account\", fileupload());\nrouter.route(\"/account\").post(controller.create).get(controller.list);\nrouter.route(\"/account/:id\").get(controller.show).delete(controller.delete).put(controller.update);\nrouter.route(\"/account/verify\").post(controller.verify);\nrouter.route(\"/file\").post(controller.file);\nmodule.exports = router;\n\n//# sourceURL=webpack://mysite/./server/routers/accountRouter.js?");
 
 /***/ }),
 
@@ -123,6 +133,17 @@ module.exports = require("express");
 
 /***/ }),
 
+/***/ "express-fileupload":
+/*!*************************************!*\
+  !*** external "express-fileupload" ***!
+  \*************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("express-fileupload");
+
+/***/ }),
+
 /***/ "mongoose":
 /*!***************************!*\
   !*** external "mongoose" ***!
@@ -131,6 +152,17 @@ module.exports = require("express");
 
 "use strict";
 module.exports = require("mongoose");
+
+/***/ }),
+
+/***/ "nodemailer":
+/*!*****************************!*\
+  !*** external "nodemailer" ***!
+  \*****************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("nodemailer");
 
 /***/ }),
 
@@ -164,6 +196,28 @@ module.exports = require("webpack-dev-middleware");
 
 "use strict";
 module.exports = require("webpack-hot-middleware");
+
+/***/ }),
+
+/***/ "crypto":
+/*!*************************!*\
+  !*** external "crypto" ***!
+  \*************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("crypto");
+
+/***/ }),
+
+/***/ "fs":
+/*!*********************!*\
+  !*** external "fs" ***!
+  \*********************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs");
 
 /***/ }),
 

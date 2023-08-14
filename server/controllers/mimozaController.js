@@ -1,4 +1,4 @@
-const Espa = require('../models/espa');
+const Mimoza = require('../models/mimoza');
 
 exports.create = (req, res) => {
 
@@ -12,10 +12,10 @@ exports.list = (req, res) => {
 
 }
 
-exports.delete = (req, res) => {
+exports.update = (req, res) => {
 
 }
 
-exports.update = (req, res) => {
+exports.delete = (req, res) => {
     
 }
