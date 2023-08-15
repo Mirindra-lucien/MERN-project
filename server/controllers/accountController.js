@@ -2,7 +2,8 @@ const Account = require('../models/account');
 const fs = require('fs');
 const path = require('path');
 const CWDIR = process.cwd();
-const nodemailer = require('nodemailer'); 
+const nodemailer = require('nodemailer');
+const mailerConfig = require('../../config/mailerConfig');
 
 exports.create = async (req, res) => {
     try{
@@ -96,7 +97,7 @@ exports.verify = (req, res) => {
         service: 'gmail',
         auth: {
             user: 'mimoza.association@gmail.com',
-            pass: '***********'
+            pass: mailerConfig.code
         }
     });
     
