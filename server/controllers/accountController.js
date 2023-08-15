@@ -96,13 +96,13 @@ exports.verify = (req, res) => {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'mimoza.association@gmail.com',
+            user: mailerConfig.email,
             pass: mailerConfig.code
         }
     });
     
     var mailOptions = {
-        from: 'mimoza.association@gmail.com',
+        from: mailerConfig.email,
         to: email+"",
         subject: 'Fanamarinana fanokafana kaonty',
         text: "Ny teny miafina hanamarinana ny kaonty email anao dia : " + code
