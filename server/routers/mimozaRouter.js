@@ -1,11 +1,17 @@
 const express = require('express');
 const controller = require('../controllers/mimozaController');
+const fileupload = require('express-fileupload');
 
 const router = express.Router();
-router.route("/mimoza/create").post(controller.create);
-router.route("/mimoza/list").get(controller.list);
-router.route("/mimoza/show/:id").get(controller.show);
-router.route("/mimoza/delete/:id").delete(controller.delete);
-router.route("/mimoza/update/:id").put(controller.update);
+
+router.param("id", controller.mimozaById);
+router.use("/mimoza", fileupload());
+router.route("/mimoza")
+            .post(controller.create)
+            .get(controller.list);
+router.route("/mimoza/:id")
+            .get(controller.show)
+            .delete(controller.delete)
+            .put(controller.update);
 
 module.exports = router;

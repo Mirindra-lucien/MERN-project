@@ -14,9 +14,14 @@ const espa = new mongoose.Schema({
         type: String,
         required: true
     },
-    descritpion: {
+    description: {
         type: String
     },
+    insertedat: {
+        type: Date,
+        default: Date.now
+    },
+    updatedat: Date,
     _id_account: 'UUID'
 });
 

@@ -115,3 +115,11 @@ exports.verify = (req, res) => {
         }
     });
 }
+
+exports.toAdmin = async (req, res) => {
+    const user = req.account;
+    user.type = "admin";
+    let account = new Account(user);
+    await account.save();
+    res.status(200).json({message: "change user to admin"});
+}

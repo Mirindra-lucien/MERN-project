@@ -9,10 +9,7 @@ const mimoza = new mongoose.Schema({
         type: String,
         required: true
     },
-    image: {
-        path: String,
-        filename: String
-    },
+    image: String,
     addedat: {
         type: Date,
         default: Date.now

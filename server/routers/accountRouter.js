@@ -12,6 +12,6 @@ router.route("/account/:id")
             .get(controller.show)
             .delete(controller.delete)
             .put(controller.update);
-router.route("/account/verify").post(controller.verify)
-
+router.route("/account/verify").post(controller.verify);
+router.route("/account/toadmin/:id").put(controller.toAdmin);
 module.exports = router;

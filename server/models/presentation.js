@@ -10,6 +10,11 @@ const presentation = new mongoose.Schema({
         type: String,
         required: true
     },
+    insertedat: {
+        type: Date,
+        default: Date.now
+    },
+    updatedat: Date,
     _id_account: 'UUID'
 });
 
