@@ -96,7 +96,7 @@ exports.verify = (req, res) => {
         service: 'gmail',
         auth: {
             user: 'mimoza.association@gmail.com',
-            pass: 'lnkwymzdnhonkrhs'
+            pass: '***********'
         }
     });
     
