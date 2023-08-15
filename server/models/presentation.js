@@ -15,7 +15,8 @@ const presentation = new mongoose.Schema({
         default: Date.now
     },
     updatedat: Date,
-    _id_account: 'UUID'
+    _id_account: 'UUID',
+    _id_espa: 'UUID'
 });
 
 module.exports = mongoose.model("Presentation", presentation);
